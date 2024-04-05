@@ -3,21 +3,68 @@ const productsContainer = document.querySelector('#products-section');
 
 let allProducts = [];
 
+const getImgSlider = (images) => {
+    let activeSlideIndex = 0;
+
+    const productImgContainer = document.createElement('div');
+    productImgContainer.classList.add('product-item__img-container');
+    
+    const productImgSlider = document.createElement('div');
+    productImgSlider.classList.add('product-item__img-slider');
+
+    const sliderImagesEl = images.map((image, i) => {
+        const productImg = document.createElement('img');
+
+        const classList = ['product-item__img', 'product-item__img-slide'];
+        if (i === activeSlideIndex) {
+            classList.push('product-item__img-slide_active');
+        }
+
+        productImg.classList.add(...classList);
+        productImg.src = image;
+        productImg.referrerPolicy = "no-referrer";
+
+        productImg.onerror = () => {
+            productImg.src = 'https://placehold.co/600x400';
+        };
+
+        return productImg;
+    });
+
+    sliderImagesEl.forEach(imgEl => {
+        productImgSlider.append(imgEl);
+    })
+
+    const productImgSliderPrev = document.createElement('div');
+    productImgSliderPrev.classList.add('product-item__img-slider-btn', 'product-item__img-slider-prev');
+    productImgSliderPrev.innerHTML = '<';
+
+    const productImgSliderNext = document.createElement('div');
+    productImgSliderNext.classList.add('product-item__img-slider-btn', 'product-item__img-slider-next');
+    productImgSliderNext.innerHTML = '>';
+
+    productImgSliderPrev.addEventListener('click', () => {
+        sliderImagesEl[activeSlideIndex].classList.remove('product-item__img-slide_active');
+
+        activeSlideIndex = activeSlideIndex === 0 ? sliderImagesEl.length - 1 : --activeSlideIndex;
+        sliderImagesEl[activeSlideIndex].classList.add('product-item__img-slide_active');
+    });
+
+    productImgSliderNext.addEventListener('click', () => {
+        sliderImagesEl[activeSlideIndex].classList.remove('product-item__img-slide_active');
+
+        activeSlideIndex = activeSlideIndex === sliderImagesEl.length - 1 ? 0 : ++activeSlideIndex;
+        sliderImagesEl[activeSlideIndex].classList.add('product-item__img-slide_active');
+    });
+
+    productImgContainer.append(productImgSlider, productImgSliderPrev, productImgSliderNext);
+
+    return productImgContainer;
+};
 
 const getProduct = (product) => {
     const productContainer = document.createElement('div');
     productContainer.classList.add('products-section__item', 'product-item');
-    
-    const productImgContainer = document.createElement('div');
-    productImgContainer.classList.add('product-item__img-container');
-
-    product.images.forEach(image => {
-        const productImg = document.createElement('img');
-        productImg.classList.add('product-item__img');
-        productImg.src = image;
-
-        productImgContainer.append(productImg);
-    });
 
     const productInfoWrapper = document.createElement('div');
     productInfoWrapper.classList.add('product-item__info-wrapper');
@@ -48,7 +95,7 @@ const getProduct = (product) => {
 
     productInfoWrapper.append(productTitle, productDesc, productCategoryWrapper, productPriceWrapper);
 
-    productContainer.append(productImgContainer, productInfoWrapper);
+    productContainer.append(getImgSlider(product.images), productInfoWrapper);
 
     return productContainer;
 };

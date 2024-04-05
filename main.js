@@ -5,6 +5,8 @@ const descrMinLength = 50;
 
 let allProducts = [];
 
+let isLoading;
+
 const getImgSlider = (images) => {
     let activeSlideIndex = 0;
 
@@ -136,14 +138,24 @@ const renderProducts = (container, products) => {
     });
 };
 
+const renderLoader = (container, loading) => {
+    container.innerHTML = loading ? '<div class="products-section__loader"><img src="./assets/loader.svg"/></div>' : null;
+};
+
+isLoading = true;
+renderLoader(productsContainer, isLoading);
+
 fetch('https://api.escuelajs.co/api/v1/products')
   .then(response => response.json())
   .then(fetchedProducts => {
     allProducts = fetchedProducts;
-    console.log('fetchedProducts', fetchedProducts);
+    isLoading = false;
+    renderLoader(productsContainer, isLoading);
     renderProducts(productsContainer, allProducts);
   })
   .catch(e => {
+    isLoading = false;
+    renderLoader(productsContainer, isLoading);
     console.error('Error while fetching data: ', e);
   });
 

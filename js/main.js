@@ -206,28 +206,30 @@ const getLikedItems = () => {
   return JSON.parse(localStorage.getItem(storageKey)) || [];
 };
 
-isLoading = true;
-renderLoader(productsContainer, isLoading);
+document.addEventListener("DOMContentLoaded", () => {
+  isLoading = true;
+  renderLoader(productsContainer, isLoading);
 
-fetch("https://api.escuelajs.co/api/v1/products")
-  .then((response) => response.json())
-  .then((fetchedProducts) => {
-    likedProducts = getLikedItems();
-    allProducts = fetchedProducts;
-    isLoading = false;
+  fetch("https://api.escuelajs.co/api/v1/products")
+    .then((response) => response.json())
+    .then((fetchedProducts) => {
+      likedProducts = getLikedItems();
+      allProducts = fetchedProducts;
+      isLoading = false;
 
-    renderLoader(productsContainer, isLoading);
+      renderLoader(productsContainer, isLoading);
 
-    if (allProducts.length) {
-      renderProducts(productsContainer, allProducts);
-    } else {
-      renderError(productsContainer, "List of products is empty!");
-    }
-  })
-  .catch((e) => {
-    const errorMsg = "Error while fetching data";
-    isLoading = false;
-    renderLoader(productsContainer, isLoading);
-    renderError(productsContainer, errorMsg);
-    console.error(errorMsg, ": ", e);
-  });
+      if (allProducts.length) {
+        renderProducts(productsContainer, allProducts);
+      } else {
+        renderError(productsContainer, "List of products is empty!");
+      }
+    })
+    .catch((e) => {
+      const errorMsg = "Error while fetching data";
+      isLoading = false;
+      renderLoader(productsContainer, isLoading);
+      renderError(productsContainer, errorMsg);
+      console.error(errorMsg, ": ", e);
+    });
+});

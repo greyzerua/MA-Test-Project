@@ -118,14 +118,12 @@ body {
     margin-top: 7px;
 }
 .product-item__like-button {
+    width: 30px;
+    height: 30px;
+    background-size: contain;
     background-color: transparent;
-    color: white;
-    border: 1px solid white;
-    border-radius: 4px;
-    padding: 8px;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
 }
 .product-item__like-button:hover {
-    background-color: white;
-    color: black;
+    transform: scale(1.1);
 }

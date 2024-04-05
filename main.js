@@ -3,7 +3,11 @@ const productsContainer = document.querySelector('#products-section');
 
 const descrMinLength = 50;
 
+const storageKey = 'liked-items';
+
 let allProducts = [];
+
+let likedProducts = [];
 
 let isLoading;
 
@@ -96,6 +100,30 @@ const getMoreLessDescription = (description) => {
     return productDescWrapper;
 };
 
+const getLikeButton = (productId) => {
+    let isLiked = likedProducts.includes(productId);
+
+    const productLikeBtn = document.createElement('button');
+    productLikeBtn.classList.add('product-item__like-button');
+    
+    productLikeBtn.style.backgroundImage = isLiked ? 'url(./assets/heart-filled.png)' : 'url(./assets/heart.png)';
+
+    productLikeBtn.addEventListener('click', () => {
+        isLiked = !isLiked;
+
+        if (isLiked) {
+            likedProducts.push(productId);
+        } else {
+            likedProducts = likedProducts.filter(id => id !== productId);
+        }
+        localStorage.setItem(storageKey, JSON.stringify(likedProducts));
+
+        productLikeBtn.style.backgroundImage = isLiked ? 'url(./assets/heart-filled.png)' : 'url(./assets/heart.png)';
+    });
+
+    return productLikeBtn;
+};
+
 const getProduct = (product) => {
     const productContainer = document.createElement('div');
     productContainer.classList.add('products-section__item', 'product-item');
@@ -114,14 +142,10 @@ const getProduct = (product) => {
     productCategory.innerHTML = product.category.name;
     productCategoryWrapper.append(productCategory);
 
-    const productLikeBtn = document.createElement('button');
-    productLikeBtn.classList.add('product-item__like-button');
-    productLikeBtn.innerHTML = 'Like';
-
     const productPriceWrapper = document.createElement('div');
     productPriceWrapper.classList.add('product-item__price-container');
     productPriceWrapper.innerHTML = `<div class="product-item__price-wrapper"><span>Price</span><span class="product-item__price">$ ${product.price}</span></div>`;
-    productPriceWrapper.append(productLikeBtn);
+    productPriceWrapper.append(getLikeButton(product.id));
 
     productInfoWrapper.append(productTitle, getMoreLessDescription(product.description), productCategoryWrapper, productPriceWrapper);
 
@@ -142,12 +166,18 @@ const renderLoader = (container, loading) => {
     container.innerHTML = loading ? '<div class="products-section__loader"><img src="./assets/loader.svg"/></div>' : null;
 };
 
+const getLikedItems = () => {
+    return JSON.parse(localStorage.getItem(storageKey)) || [];
+}
+
+
 isLoading = true;
 renderLoader(productsContainer, isLoading);
 
 fetch('https://api.escuelajs.co/api/v1/products')
   .then(response => response.json())
   .then(fetchedProducts => {
+    likedProducts = getLikedItems();
     allProducts = fetchedProducts;
     isLoading = false;
     renderLoader(productsContainer, isLoading);

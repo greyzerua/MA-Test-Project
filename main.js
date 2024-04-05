@@ -1,6 +1,8 @@
 
 const productsContainer = document.querySelector('#products-section');
 
+const descrMinLength = 50;
+
 let allProducts = [];
 
 const getImgSlider = (images) => {
@@ -62,6 +64,36 @@ const getImgSlider = (images) => {
     return productImgContainer;
 };
 
+const getMoreLessDescription = (description) => {
+    let expanded = false;
+
+    const productDescWrapper = document.createElement('div');
+    productDescWrapper.classList.add('product-item__description-wrapper');
+
+    const productDesc = document.createElement('div');
+    productDesc.classList.add('product-item__description');
+    productDesc.innerHTML = `${description.slice(0, descrMinLength)}...`;
+
+    const productDescButton = document.createElement('button');
+    productDescButton.classList.add('product-item__description-button');
+    productDescButton.innerHTML = 'Show More';
+
+    productDescButton.addEventListener('click', () => {
+        if (expanded) {
+            productDesc.innerHTML = `${description.slice(0, descrMinLength)}...`;
+            productDescButton.innerHTML = 'Show More';
+        } else {
+            productDesc.innerHTML = description;
+            productDescButton.innerHTML = 'Show Less';
+        }
+        expanded = !expanded;
+    });
+
+    productDescWrapper.append(productDesc, productDescButton);
+    
+    return productDescWrapper;
+};
+
 const getProduct = (product) => {
     const productContainer = document.createElement('div');
     productContainer.classList.add('products-section__item', 'product-item');
@@ -72,10 +104,6 @@ const getProduct = (product) => {
     const productTitle = document.createElement('h4');
     productTitle.classList.add('product-item__title');
     productTitle.innerHTML = product.title;
-
-    const productDesc = document.createElement('div');
-    productDesc.classList.add('product-item__description');
-    productDesc.innerHTML = product.description;
 
     const productCategoryWrapper = document.createElement('div');
     productCategoryWrapper.classList.add('product-item__category-wrapper');
@@ -93,7 +121,7 @@ const getProduct = (product) => {
     productPriceWrapper.innerHTML = `<div class="product-item__price-wrapper"><span>Price</span><span class="product-item__price">$ ${product.price}</span></div>`;
     productPriceWrapper.append(productLikeBtn);
 
-    productInfoWrapper.append(productTitle, productDesc, productCategoryWrapper, productPriceWrapper);
+    productInfoWrapper.append(productTitle, getMoreLessDescription(product.description), productCategoryWrapper, productPriceWrapper);
 
     productContainer.append(getImgSlider(product.images), productInfoWrapper);
 
@@ -114,5 +142,8 @@ fetch('https://api.escuelajs.co/api/v1/products')
     allProducts = fetchedProducts;
     console.log('fetchedProducts', fetchedProducts);
     renderProducts(productsContainer, allProducts);
+  })
+  .catch(e => {
+    console.error('Error while fetching data: ', e);
   });
 

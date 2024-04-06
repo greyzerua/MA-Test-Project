@@ -154,6 +154,9 @@ const getProduct = (product) => {
   const productInfoWrapper = document.createElement("div");
   productInfoWrapper.classList.add("product-item__info-wrapper");
 
+  const productInfo = document.createElement("div");
+  productInfo.classList.add("product-item__info");
+
   const productTitle = document.createElement("h4");
   productTitle.classList.add("product-item__title");
   productTitle.innerHTML = product.title;
@@ -169,12 +172,15 @@ const getProduct = (product) => {
   productPriceWrapper.classList.add("product-item__price-container");
   productPriceWrapper.innerHTML = `<div class="product-item__price-wrapper"><span>Price</span><span class="product-item__price">$ ${product.price}</span></div>`;
   productPriceWrapper.append(getLikeButton(product.id));
-
+  
   productInfoWrapper.append(
+    productInfo,
+    productPriceWrapper
+  );
+  productInfo.append(
     productTitle,
     getMoreLessDescription(product.description),
-    productCategoryWrapper,
-    productPriceWrapper
+    productCategoryWrapper
   );
 
   productContainer.append(getImgSlider(product.images), productInfoWrapper);
